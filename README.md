@@ -41,3 +41,15 @@
 - 상품과 쿠폰 데이터는 하단에 주어진 데이터를 사용해주세요
     - 상품과 쿠폰 데이터가 서버에서 주어진다고 생각하고 구현 해주세요
     - 서버에서 주어진다고 가정하기 때문에, **해당 데이터의 raw 값을 직접 변경하는 것은 허용하지 않습니다**
+
+# 구현 설계
+## 기능
+store가 필요한 것 -> 장바구니
+pagination, checkbox 등은 내부 state로 처리하기
+
+## 파일분할 
++ pages와 /src/render를 나눔으로써 화면 출력과 parameters관리 부분을 나눠서 볼 수 있게 했으며, styles.tsx파일 추가등, 파일 시스템을 더 유연하게 할 수 있도록 했다.
++ 장바구니 구현을 위해서 필요한 store는 /src/modules/store안에 위치한다.
+  + 개발중에 한 페이지에서만 쓰이지 않고 여러곳에서 반복적인 계산이 나타나면 그것또한 modules안에 넣을 예정
++ components안에는 공용적으로 쓰이는 요소가 들어간다. eg) Header, Footer
++ /src/data안에 api 결과값처럼 쓰일 coupons, productItems 정보가 들어간다.

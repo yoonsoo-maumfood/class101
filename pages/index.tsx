@@ -1,7 +1,8 @@
+import RenderHome from '../src/render/home'
 
 const Home = () => {
   return (
-    <h1>Home</h1>
+    <RenderHome />
   );
 }
 
