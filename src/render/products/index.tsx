@@ -1,13 +1,15 @@
-import {
-  PageWrapper
-} from './styles';
+import Layout from "../../components/GlobalLayout";
+
+import { PageWrapper } from "./styles";
 
 const RenderProducts = () => {
   return (
-    <PageWrapper>
-      <h1>Products</h1>
-    </PageWrapper>
+    <Layout>
+      <PageWrapper>
+        <h1>Products</h1>
+      </PageWrapper>
+    </Layout>
   );
-}
+};
 
 export default RenderProducts;
