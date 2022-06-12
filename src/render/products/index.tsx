@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import fakeFetch, { Url, ProductItem } from "../../modules/fakeFetch";
 
 import Layout from "../../components/GlobalLayout";
+import ProductCard from '../../components/ProductCard';
+import PageNavigator from '../../components/PageNavigator';
 import { PageWrapper } from "./styles";
 
 const RenderProducts = () => {
@@ -43,11 +45,9 @@ const RenderProducts = () => {
     <Layout>
       <PageWrapper>
         { !error && productsToShow.map ( (product) => (
-          <div key={product.id}>{product.title}{product.score}</div>
+          <ProductCard product={product} key={product.id} />
         ))}
-        { !error && pages.map( (page) => (
-          <span key={page} onClick={ () => setPage(page) }>{page}</span>
-        ))}
+        <PageNavigator pages={pages} currentPage={page} setPage={setPage} />
       </PageWrapper>
     </Layout>
   );
