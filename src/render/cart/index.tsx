@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import fakeFetch, { Url, ProductItem } from "../../modules/fakeFetch";
-import useStore from "../../modules/store/cart";
+import { ProductItem } from "../../modules/fakeFetch";
+import useProductList from "../../modules/store/productList";
+import useCart from "../../modules/store/cart";
 
 import Layout from "../../components/GlobalLayout";
 import ProductCard from "../../components/ProductCard";
@@ -9,74 +10,71 @@ import { PageWrapper } from "./styles";
 
 const RenderCart = () => {
   const PRODUCTS_PER_PAGE = 5;
-  const [error, setError] = useState<boolean>(false);
+  const {
+    initialized: initialized,
+    productList: products,
+    fetchProducts: fetchProducts,
+  } = useProductList();
+
   const [page, setPage] = useState<number>(1);
   const [pages, setPages] = useState<number[]>([]);
-  const [products, setProducts] = useState<ProductItem[]>([]);
-  //여기의 products는 cart에 담긴 products만을 처리한다.
+  const [productsInCart, setProductsInCart] = useState<ProductItem[]>([]);
   const [productsToShow, setProductsToShow] = useState<ProductItem[]>([]);
 
-  const cartList = useStore((state) => state.cartItemIds);
-  const addToCart = useStore((state) => state.addItem);
-  const removeFromCart = useStore((state) => state.removeItem);
+  const {
+    cartItemIds: cartList,
+    addItem: addToCart,
+    removeItem: removeFromCart,
+  } = useCart();
 
   useEffect(() => {
-    try {
-      //product에 대한 fetch를 따로 빼주면 효율성이 증가할 것
-      let productsRaw = fakeFetch(Url.Products);
-      if (productsRaw === undefined) {
-        throw new Error("product load failed");
-      }
-      productsRaw =  productsRaw.filter(
-        (product: ProductItem) => {
-          for ( const id of cartList ) {
-            if ( product.id === id ) {
-              return true;
-            }
-          }
-          return false;
-        }
-      );
-      productsRaw.sort((a: ProductItem, b: ProductItem) => b.score - a.score);
-      setPages(
-        Array(Math.ceil(productsRaw.length / PRODUCTS_PER_PAGE))
-          .fill(1)
-          .map((x, y) => x + y)
-        //페이지가 3개있어야 한다면, [1, 2, 3]이런 array 형성
-      );
-      setProducts(productsRaw);
-    } catch (e) {
-      console.log(e);
-      setError(true);
+    if (!initialized) {
+      fetchProducts();
     }
-  }, [cartList]);
+    //pic === productsInCart
+    const pic = products.filter((product) => {
+      for (const id of cartList) {
+        if (product.id === id) {
+          console.log(id);
+          return true;
+        }
+      }
+      return false;
+    });
+    setPages(
+      Array(Math.ceil(pic.length / PRODUCTS_PER_PAGE))
+        .fill(1)
+        .map((x, y) => x + y)
+      //페이지가 3개있어야 한다면, [1, 2, 3]이런 array 형성
+    );
+    setProductsInCart(pic);
+  }, [initialized, products, fetchProducts, cartList]);
 
   useEffect(() => {
     const pts: ProductItem[] = [];
     for (
       let index = (page - 1) * PRODUCTS_PER_PAGE;
-      index < products.length && index < page * PRODUCTS_PER_PAGE;
+      index < productsInCart.length && index < page * PRODUCTS_PER_PAGE;
       index++
     ) {
       //보여줘야할 페이지의 인덱스 계산
-      pts.push(products[index]);
+      pts.push(productsInCart[index]);
     }
     setProductsToShow(pts);
-  }, [page, products]);
+  }, [page, productsInCart]);
 
   return (
     <Layout>
       <PageWrapper>
-        {!error &&
-          productsToShow.map((product) => (
-            <ProductCard
-              product={product}
-              key={product.id}
-              inCart={!(cartList.find((id) => id === product.id) === undefined)}
-              addToCart={() => addToCart(product.id)}
-              removeFromCart={() => removeFromCart(product.id)}
-            />
-          ))}
+        {productsToShow.map((product) => (
+          <ProductCard
+            product={product}
+            key={product.id}
+            inCart={!(cartList.find((id) => id === product.id) === undefined)}
+            addToCart={() => addToCart(product.id)}
+            removeFromCart={() => removeFromCart(product.id)}
+          />
+        ))}
         <PageNavigator pages={pages} currentPage={page} setPage={setPage} />
       </PageWrapper>
     </Layout>
