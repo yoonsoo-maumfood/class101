@@ -11,20 +11,22 @@ const fakeFetch = (
   url: Url,
   index?: number
 ): any => {
+  const copiedProductItems = [ ...productItems ];
+  const copiedCoupons = [ ...coupons ];
   //index가 주어질경우 그에 해당하는 하나의 아이템 반환
   //주어지지 않으면 전체 리스트 반환
   switch (url) {
     case Url.Products:
       if (index !== undefined) {
-        return productItems[index];
+        return copiedProductItems[index];
       } else {
-        return productItems;
+        return copiedProductItems;
       }
     case Url.Coupons:
       if (index !== undefined) {
-        return coupons[index];
+        return copiedCoupons[index];
       } else {
-        return coupons;
+        return copiedCoupons;
       }
     default:
       return undefined;
