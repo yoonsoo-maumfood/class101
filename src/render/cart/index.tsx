@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ProductItem } from "../../modules/fakeFetch";
+import fakeFetch, { Url, ProductItem, Coupon } from "../../modules/fakeFetch";
 import useProductList from "../../modules/store/productList";
 import useCart from "../../modules/store/cart";
 
@@ -16,18 +16,24 @@ const RenderCart = () => {
     fetchProducts: fetchProducts,
   } = useProductList();
 
+  //product related values
   const [page, setPage] = useState<number>(1);
   const [pages, setPages] = useState<number[]>([]);
   const [productsInCart, setProductsInCart] = useState<ProductItem[]>([]);
   const [productsToShow, setProductsToShow] = useState<ProductItem[]>([]);
 
+  //cart related values
   const {
     cartItemIds: cartList,
     addItem: addToCart,
     removeItem: removeFromCart,
   } = useCart();
 
+  //coupon related values
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+
   useEffect(() => {
+    //when products change
     if (!initialized) {
       fetchProducts();
     }
@@ -35,7 +41,6 @@ const RenderCart = () => {
     const pic = products.filter((product) => {
       for (const id of cartList) {
         if (product.id === id) {
-          console.log(id);
           return true;
         }
       }
@@ -51,6 +56,13 @@ const RenderCart = () => {
   }, [initialized, products, fetchProducts, cartList]);
 
   useEffect(() => {
+    //when coupons change(never -> only once)
+
+    setCoupons(fakeFetch(Url.Coupons));
+  }, []);
+
+  useEffect(() => {
+    //when page changes
     const pts: ProductItem[] = [];
     for (
       let index = (page - 1) * PRODUCTS_PER_PAGE;
@@ -76,6 +88,15 @@ const RenderCart = () => {
           />
         ))}
         <PageNavigator pages={pages} currentPage={page} setPage={setPage} />
+        
+        <select>
+          <option value="">-</option>
+          {coupons.map((coupon, index) => (
+            <option key={index} value={index}>
+              {coupon.title}
+            </option>
+          ))}
+        </select>
       </PageWrapper>
     </Layout>
   );
