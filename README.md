@@ -53,3 +53,11 @@ pagination, checkbox 등은 내부 state로 처리하기
   + 개발중에 한 페이지에서만 쓰이지 않고 여러곳에서 반복적인 계산이 나타나면 그것또한 modules안에 넣을 예정
 + components안에는 공용적으로 쓰이는 요소가 들어간다. eg) Header, Footer
 + /src/data안에 api 결과값처럼 쓰일 coupons, productItems 정보가 들어간다.
+
+# 참고사항
+## 차이점
+장바구니 갯수제한이 굳이 필요한가싶어서 구현은 안했음
+## 더 해야 할 것
+코드가 일관성이 없는데, 특히
+1. product관련한 state에서 id를 할때가 있고 그냥 product 그대로 저장할때가 있는데 하나로 통일해야 함
+2. 클릭했을때의 이벤트를 하위 컴포넌트로 전달할때 인자 설정이 불분명함
