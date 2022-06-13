@@ -1,7 +1,4 @@
-import { useMemo } from 'react';
-/*import {
-
-} from 'styles'; */
+import { NavigatorWrapper, NavigatorContainer, PageBox } from "./styles";
 
 const PageNavigator = ({
   pages,
@@ -13,14 +10,20 @@ const PageNavigator = ({
   setPage: Function;
 }) => {
   return (
-    <div>
-      { pages.map( ( page ) => (
-        (page === currentPage) ?
-        <span key={page}>@</span> :
-        <span key={page} onClick={ () => setPage(page) }>{page}</span>
-      ))}
-    </div>
-  )
+    <NavigatorWrapper>
+      <NavigatorContainer>
+        {pages.map((page) => (
+          <PageBox
+            key={page}
+            onClick={() => setPage(page)}
+            highlight={page === currentPage}
+          >
+            {page}
+          </PageBox>
+        ))}
+      </NavigatorContainer>
+    </NavigatorWrapper>
+  );
 };
 
 export default PageNavigator;
