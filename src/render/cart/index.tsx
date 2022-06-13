@@ -6,7 +6,24 @@ import useCart from "../../modules/store/cart";
 import Layout from "../../components/GlobalLayout";
 import ProductCard from "../../components/ProductCard";
 import PageNavigator from "../../components/PageNavigator";
-import { PageWrapper, ProductCardContainer } from "./styles";
+import {
+  PageWrapper,
+  ProductCardContainer,
+  CalculatorContainer,
+  CouponSelector,
+  PriceDetailContainer,
+  PriceContainer,
+  PriceContainerTitle,
+  PriceBox,
+  PriceTitle,
+  PriceValue,
+  TotalPrice,
+} from "./styles";
+
+interface SaleHistory {
+  title: string;
+  price: number;
+}
 
 const RenderCart = () => {
   const PRODUCTS_PER_PAGE = 5;
@@ -47,7 +64,10 @@ const RenderCart = () => {
     }
   };
 
-  const [totalCost, setTotalCost] = useState<number>(0);
+  //Price related values
+
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [saleHistory, setSaleHistory] = useState<SaleHistory[]>([]);
 
   useEffect(() => {
     //when products change
@@ -94,6 +114,7 @@ const RenderCart = () => {
 
   useEffect(() => {
     let sum = 0;
+    const history = Array<SaleHistory>();
 
     if (coupon === null) {
       for (const product of productsInBuy) {
@@ -103,9 +124,14 @@ const RenderCart = () => {
       if (coupon.type === "rate") {
         for (const product of productsInBuy) {
           if (!(product.availableCoupon === false)) {
-            sum += product.price * (100 - (coupon.discountRate as number)) * 0.01;
+            sum +=
+              product.price * (100 - (coupon.discountRate as number)) * 0.01;
+            history.push({
+              title: product.title + ` ${coupon.discountRate}% 세일`,
+              price: product.price * (coupon.discountRate as number) * 0.01,
+            });
           } else {
-          sum += product.price;
+            sum += product.price;
           }
         }
       } else if (coupon.type === "amount") {
@@ -113,6 +139,10 @@ const RenderCart = () => {
           sum += product.price;
         }
         sum -= coupon.discountAmount as number;
+        history.push({
+          title: `${coupon.discountAmount as number}원 세일`,
+          price: coupon.discountAmount as number,
+        });
         if (sum < 0) {
           sum = 0;
         }
@@ -121,54 +151,77 @@ const RenderCart = () => {
       }
     }
 
-    setTotalCost(sum);
+    setTotalPrice(sum);
+    setSaleHistory(history);
   }, [coupon, productsInBuy]);
 
   return (
     <Layout>
       <PageWrapper>
-        <ProductCardContainer> 
+        <ProductCardContainer>
           {productsToShow.map((product) => (
-          <ProductCard
-            image={false}
-            cartView={true}
-            product={product}
-            key={product.id}
-            inBuy={
-              !(productsInBuy.find((p) => p.id === product.id) === undefined)
-            }
-            inCart={!(cartList.find((id) => id === product.id) === undefined)}
-            addToCart={() => addToCart(product.id)}
-            removeFromCart={() => {
-              removeFromCart(product.id);
-              removeFromBuy(product);
-            }}
-            onChange={() => toggleBuy(product)}
-          />
-        ))}
-
+            <ProductCard
+              image={false}
+              cartView={true}
+              product={product}
+              key={product.id}
+              inBuy={
+                !(productsInBuy.find((p) => p.id === product.id) === undefined)
+              }
+              inCart={!(cartList.find((id) => id === product.id) === undefined)}
+              addToCart={() => addToCart(product.id)}
+              removeFromCart={() => {
+                removeFromCart(product.id);
+                removeFromBuy(product);
+              }}
+              onChange={() => toggleBuy(product)}
+            />
+          ))}
         </ProductCardContainer>
-       
+
         <PageNavigator pages={pages} currentPage={page} setPage={setPage} />
 
-        <select
-          onChange={(e: any) => {
-            if (e.target.value === "") {
-              setCoupon(null);
-            } else {
-              setCoupon(coupons[e.target.value]);
-            }
-          }}
-        >
-          <option value="">-</option>
-          {coupons.map((coupon, index) => (
-            <option key={index} value={index}>
-              {coupon.title}
-            </option>
-          ))}
-        </select>
+        <CalculatorContainer>
+          <CouponSelector
+            onChange={(e: any) => {
+              if (e.target.value === "") {
+                setCoupon(null);
+              } else {
+                setCoupon(coupons[e.target.value]);
+              }
+            }}
+          >
+            <option value="">쿠폰을 선택하세요</option>
+            {coupons.map((coupon, index) => (
+              <option key={index} value={index}>
+                {coupon.title}
+              </option>
+            ))}
+          </CouponSelector>
 
-        <div>총합: {totalCost}</div>
+          <PriceDetailContainer>
+            <PriceContainer>
+              <PriceContainerTitle>가격 정보</PriceContainerTitle>
+              {productsInBuy.map((product) => (
+                <PriceBox key={product.id}>
+                  <PriceTitle>{product.title}</PriceTitle>
+                  <PriceValue sale={false}>{product.price.toLocaleString()}</PriceValue>
+                </PriceBox>
+              ))}
+            </PriceContainer>
+            <PriceContainer>
+              <PriceContainerTitle>세일 정보</PriceContainerTitle>
+              {saleHistory.map((history, index) => (
+                <PriceBox key={index}>
+                  <PriceTitle>{history.title}</PriceTitle>
+                  <PriceValue sale={true}>-{history.price.toLocaleString()}</PriceValue>
+                </PriceBox>
+              ))}
+            </PriceContainer>
+          </PriceDetailContainer>
+
+          <TotalPrice>총합: {totalPrice.toLocaleString()}</TotalPrice>
+        </CalculatorContainer>
       </PageWrapper>
     </Layout>
   );
