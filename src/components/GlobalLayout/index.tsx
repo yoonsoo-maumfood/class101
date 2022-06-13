@@ -10,7 +10,7 @@ const GlobalWrapper = styled.div`
 
 const ChildrenWrapper = styled.div`
   position: relative;
-  margin: ${HEADER_HEIGHT}px 0 0 0;
+  margin: ${HEADER_HEIGHT+30}px 30px 0px 30px;
   padding: 0;
 `
 

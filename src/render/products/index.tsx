@@ -6,7 +6,7 @@ import useProductList from "../../modules/store/productList";
 import Layout from "../../components/GlobalLayout";
 import ProductCard from "../../components/ProductCard";
 import PageNavigator from "../../components/PageNavigator";
-import { PageWrapper } from "./styles";
+import { PageWrapper, ProductCardContainer } from "./styles";
 
 const RenderProducts = () => {
   const PRODUCTS_PER_PAGE = 5;
@@ -53,15 +53,19 @@ const RenderProducts = () => {
   return (
     <Layout>
       <PageWrapper>
-        {productsToShow.map((product) => (
-          <ProductCard
-            product={product}
-            key={product.id}
-            inCart={!(cartList.find((id) => id === product.id) === undefined)}
-            addToCart={() => addToCart(product.id)}
-            removeFromCart={() => removeFromCart(product.id)}
-          />
-        ))}
+        <ProductCardContainer>
+          {productsToShow.map((product) => (
+            <ProductCard
+              width={500}
+              image={true}
+              product={product}
+              key={product.id}
+              inCart={!(cartList.find((id) => id === product.id) === undefined)}
+              addToCart={() => addToCart(product.id)}
+              removeFromCart={() => removeFromCart(product.id)}
+            />
+          ))}
+        </ProductCardContainer>
         <PageNavigator pages={pages} currentPage={page} setPage={setPage} />
       </PageWrapper>
     </Layout>

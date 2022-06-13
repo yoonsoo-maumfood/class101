@@ -6,7 +6,7 @@ import useCart from "../../modules/store/cart";
 import Layout from "../../components/GlobalLayout";
 import ProductCard from "../../components/ProductCard";
 import PageNavigator from "../../components/PageNavigator";
-import { PageWrapper } from "./styles";
+import { PageWrapper, ProductCardContainer } from "./styles";
 
 const RenderCart = () => {
   const PRODUCTS_PER_PAGE = 5;
@@ -127,8 +127,10 @@ const RenderCart = () => {
   return (
     <Layout>
       <PageWrapper>
-        {productsToShow.map((product) => (
+        <ProductCardContainer> 
+          {productsToShow.map((product) => (
           <ProductCard
+            image={false}
             cartView={true}
             product={product}
             key={product.id}
@@ -144,6 +146,9 @@ const RenderCart = () => {
             onChange={() => toggleBuy(product)}
           />
         ))}
+
+        </ProductCardContainer>
+       
         <PageNavigator pages={pages} currentPage={page} setPage={setPage} />
 
         <select

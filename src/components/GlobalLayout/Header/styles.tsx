@@ -4,6 +4,7 @@ export const HEADER_HEIGHT = 50;
 
 export const HeaderWrapper = styled.div`
   z-index: 1;
+  background-color: white;
   position: fixed;
   top: 0;
   left: 0;
